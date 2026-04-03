@@ -311,7 +311,14 @@ d3.style.display=d3days.includes(now.getDate())?"block":"none";
 renderTasks();
 setInterval(update,1000);
 update();
+
+  if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+  
 </script>
+
+  
 
 </body>
 </html>
