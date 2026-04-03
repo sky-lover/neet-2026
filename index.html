@@ -280,5 +280,11 @@ setInterval(update,1000);
 update();
 </script>
 
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
 </body>
 </html>
