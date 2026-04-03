@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>NEET 2026</title>
 
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#05060a">
@@ -57,8 +56,9 @@ body{
 
 .ring{
   position:relative;
-  width:260px;
-  height:260px;
+  width:80vw;
+  max-width:320px;
+  aspect-ratio:1;
 }
 
 svg{
@@ -78,14 +78,22 @@ svg{
   stroke:var(--accent);
   stroke-width:6;
   stroke-linecap:round;
+
+  /* CLEAN SOFT GLOW */
+  filter:
+    drop-shadow(0 0 4px rgba(110,160,255,0.6))
+    drop-shadow(0 0 8px rgba(110,160,255,0.25));
+
+  transition: stroke-dashoffset 0.8s cubic-bezier(.22,1,.36,1);
 }
 
 .dot{
   position:absolute;
-  width:8px;
-  height:8px;
+  width:6px;
+  height:6px;
   border-radius:50%;
   transform:translate(-50%,-50%);
+  background:var(--accent);
 }
 
 .center{
@@ -94,12 +102,14 @@ svg{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-family:'JetBrains Mono',monospace;
+  pointer-events:none;
 }
 
 .time{
-  font-size:1.6rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1.6rem, 6vw, 2.2rem);
   letter-spacing:2px;
+  text-align:center;
 }
 
 .row{
@@ -126,11 +136,6 @@ svg{
 .next{
   font-size:0.85rem;
   opacity:0.8;
-}
-
-@media(min-width:768px){
-  .ring{width:320px;height:320px}
-  .time{font-size:2rem}
 }
 </style>
 </head>
@@ -188,6 +193,7 @@ const d3days=[6,13,20,27];
 
 const prog=document.getElementById("progress");
 const dot=document.getElementById("dot");
+const ring=document.querySelector(".ring");
 
 const r=45;
 const c=2*Math.PI*r;
@@ -241,14 +247,16 @@ prog.style.strokeDashoffset=c*(1-p);
 const col=d<=7?"#4ade80":"#6ea0ff";
 prog.style.stroke=col;
 
+// responsive dot positioning
+const size=ring.offsetWidth;
+
 const ang=2*Math.PI*p-Math.PI/2;
 const x=50+45*Math.cos(ang);
 const y=50+45*Math.sin(ang);
 
-dot.style.left=(x/100*260)+"px";
-dot.style.top=(y/100*260)+"px";
+dot.style.left=(x/100*size)+"px";
+dot.style.top=(y/100*size)+"px";
 dot.style.background=col;
-dot.style.boxShadow=`0 0 10px ${col}`;
 
 const upcoming=tests.filter(t=>t.date>=new Date(now.toDateString()));
 next.innerText=upcoming[0]?`${upcoming[0].date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})} • ${upcoming[0].t}`:"Final stretch";
