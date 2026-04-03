@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEET 2026</title>
+
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#05060a">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#05060a;
+  --text:#eaeaf0;
+  --accent:#6ea0ff;
+  --calm:#4ade80;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(circle at 50% 40%, #0b1220, #000 70%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.wrapper{
+  width:100%;
+  max-width:420px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+}
+
+.title{
+  font-weight:800;
+  letter-spacing:2px;
+  font-size:1.6rem;
+}
+
+.datetime{
+  font-size:0.75rem;
+  opacity:0.6;
+}
+
+.ring{
+  position:relative;
+  width:80vw;
+  max-width:320px;
+  aspect-ratio:1;
+}
+
+svg{
+  width:100%;
+  height:100%;
+  transform:rotate(-90deg);
+}
+
+.track{
+  fill:none;
+  stroke:rgba(255,255,255,0.08);
+  stroke-width:6;
+}
+
+.progress{
+  fill:none;
+  stroke:var(--accent);
+  stroke-width:6;
+  stroke-linecap:round;
+
+  /* CLEAN SOFT GLOW */
+  filter:
+    drop-shadow(0 0 4px rgba(110,160,255,0.6))
+    drop-shadow(0 0 8px rgba(110,160,255,0.25));
+
+  transition: stroke-dashoffset 0.8s cubic-bezier(.22,1,.36,1);
+}
+
+.dot{
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:var(--accent);
+}
+
+.center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+
+.time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(1.6rem, 6vw, 2.2rem);
+  letter-spacing:2px;
+  text-align:center;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+}
+
+.box{
+  padding:8px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  font-size:0.8rem;
+}
+
+.box:active{
+  transform:scale(0.9);
+}
+
+.box.done{
+  opacity:0.3;
+  text-decoration:line-through;
+}
+
+.next{
+  font-size:0.85rem;
+  opacity:0.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="title">NEET 2026</div>
+<div class="datetime" id="dateTime"></div>
+
+<div class="ring">
+<svg viewBox="0 0 100 100">
+<circle class="track" cx="50" cy="50" r="45"/>
+<circle class="progress" id="progress" cx="50" cy="50" r="45"/>
+</svg>
+
+<div class="dot" id="dot"></div>
+
+<div class="center">
+<div class="time" id="time">00:00:00:00</div>
+</div>
+</div>
+
+<div class="row">
+<div class="box" id="b12">B12</div>
+<div class="box" id="d3">D3</div>
+</div>
+
+<div class="next" id="next"></div>
+
+</div>
+
+<script>
+const exam=new Date("2026-05-03T14:00:00+05:30");
+const start=new Date("2026-04-03T00:00:00+05:30");
+
+const tests=[
+{d:"2026-04-05",t:"AIATS"},
+{d:"2026-04-07",t:"FTS"},
+{d:"2026-04-09",t:"FTS"},
+{d:"2026-04-12",t:"AIATS"},
+{d:"2026-04-14",t:"FTS"},
+{d:"2026-04-16",t:"FTS"},
+{d:"2026-04-19",t:"AIATS"},
+{d:"2026-04-21",t:"MOCK"},
+{d:"2026-04-23",t:"MOCK"},
+{d:"2026-04-26",t:"AIATS"},
+{d:"2026-04-27",t:"AIATS"},
+{d:"2026-04-28",t:"MOCK"},
+{d:"2026-05-01",t:"MOCK"}
+].map(x=>({...x,date:new Date(x.d+"T00:00:00+05:30")}));
+
+const d3days=[6,13,20,27];
+
+const prog=document.getElementById("progress");
+const dot=document.getElementById("dot");
+const ring=document.querySelector(".ring");
+
+const r=45;
+const c=2*Math.PI*r;
+prog.style.strokeDasharray=c;
+
+function fmt(n){return String(n).padStart(2,"0")}
+
+function saveState(){
+return JSON.parse(localStorage.getItem("t")||"{}");
+}
+
+function toggle(k){
+const key=new Date().toDateString();
+let s=saveState();
+if(!s[key])s[key]={};
+s[key][k]=!s[key][k];
+localStorage.setItem("t",JSON.stringify(s));
+renderTasks();
+}
+
+function renderTasks(){
+const s=saveState();
+const key=new Date().toDateString();
+b12.classList.toggle("done",s[key]?.b12);
+d3.classList.toggle("done",s[key]?.d3);
+}
+
+b12.onclick=()=>toggle("b12");
+d3.onclick=()=>toggle("d3");
+
+function update(){
+const now=new Date();
+
+dateTime.innerText=now.toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+
+const diff=exam-now;
+
+const d=Math.floor(diff/86400000);
+const h=Math.floor(diff/3600000%24);
+const m=Math.floor(diff/60000%60);
+const s=Math.floor(diff/1000%60);
+
+time.innerText=`${fmt(d)}:${fmt(h)}:${fmt(m)}:${fmt(s)}`;
+
+const total=exam-start;
+const el=now-start;
+const p=Math.max(0,Math.min(1,el/total));
+
+prog.style.strokeDashoffset=c*(1-p);
+
+const col=d<=7?"#4ade80":"#6ea0ff";
+prog.style.stroke=col;
+
+// responsive dot positioning
+const size=ring.offsetWidth;
+
+const ang=2*Math.PI*p-Math.PI/2;
+const x=50+45*Math.cos(ang);
+const y=50+45*Math.sin(ang);
+
+dot.style.left=(x/100*size)+"px";
+dot.style.top=(y/100*size)+"px";
+dot.style.background=col;
+
+const upcoming=tests.filter(t=>t.date>=new Date(now.toDateString()));
+next.innerText=upcoming[0]?`${upcoming[0].date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})} • ${upcoming[0].t}`:"Final stretch";
+
+d3.style.display=d3days.includes(now.getDate())?"block":"none";
+}
+
+renderTasks();
+setInterval(update,1000);
+update();
+</script>
+
+</body>
+</html>
