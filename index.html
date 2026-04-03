@@ -10,6 +10,11 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#05060a">
 
+<!-- ✅ ADDED (homescreen support) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
@@ -78,12 +83,9 @@ svg{
   stroke:var(--accent);
   stroke-width:6;
   stroke-linecap:round;
-
-  /* CLEAN SOFT GLOW */
   filter:
     drop-shadow(0 0 4px rgba(110,160,255,0.6))
     drop-shadow(0 0 8px rgba(110,160,255,0.25));
-
   transition: stroke-dashoffset 0.8s cubic-bezier(.22,1,.36,1);
 }
 
@@ -96,12 +98,17 @@ svg{
   background:var(--accent);
 }
 
+/* ✅ FIXED CENTERING */
 .center{
   position:absolute;
-  inset:0;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
   display:flex;
   align-items:center;
   justify-content:center;
+  width:100%;
+  height:100%;
   pointer-events:none;
 }
 
@@ -136,6 +143,44 @@ svg{
 .next{
   font-size:0.85rem;
   opacity:0.8;
+}
+
+/* ✅ MOBILE POLISH */
+@media (max-width: 480px){
+
+  .wrapper{
+    padding:16px;
+    gap:14px;
+  }
+
+  .title{
+    font-size:1.4rem;
+    letter-spacing:1.5px;
+  }
+
+  .datetime{
+    font-size:0.7rem;
+  }
+
+  .ring{
+    width:85vw;
+    max-width:300px;
+  }
+
+  .time{
+    font-size:clamp(1.4rem, 7vw, 2rem);
+    letter-spacing:1.5px;
+  }
+
+  .box{
+    padding:7px 12px;
+    font-size:0.75rem;
+  }
+
+  .next{
+    font-size:0.8rem;
+    text-align:center;
+  }
 }
 </style>
 </head>
@@ -247,7 +292,6 @@ prog.style.strokeDashoffset=c*(1-p);
 const col=d<=7?"#4ade80":"#6ea0ff";
 prog.style.stroke=col;
 
-// responsive dot positioning
 const size=ring.offsetWidth;
 
 const ang=2*Math.PI*p-Math.PI/2;
