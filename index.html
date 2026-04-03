@@ -5,19 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NEET 2026</title>
 
-<!-- ✅ FAVICON (browser tab) -->
-<link rel="icon" href="favicon.png?v=3" type="image/png">
-
-<!-- ✅ iOS Home Screen Icon -->
+<!-- ICONS -->
+<link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="icon-512.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="NEET 2026">
-
-<!-- ✅ Android / PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#05060a">
-<meta name="mobile-web-app-capable" content="yes">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
@@ -36,127 +28,116 @@ body{
   font-family:'Inter',sans-serif;
   background:radial-gradient(circle at 50% 40%, #0b1220, #000 70%);
   color:var(--text);
+  min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
-  height:100vh;
+  align-items:center;
+  padding:16px;
 }
 
 .wrapper{
+  width:100%;
+  max-width:420px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:16px;
+  gap:18px;
 }
 
 .title{
   font-weight:800;
   letter-spacing:2px;
-  font-size:1.7rem;
-  opacity:0.95;
+  font-size:clamp(1.4rem,4vw,1.8rem);
 }
 
 .datetime{
-  font-size:0.78rem;
-  opacity:0.55;
+  font-size:0.8rem;
+  opacity:0.6;
 }
 
 .ring{
-  width:320px;
-  height:320px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width:min(75vw, 300px);
+  aspect-ratio:1;
   position:relative;
 }
 
 svg{
-  position:absolute;
-  width:320px;
-  height:320px;
+  width:100%;
+  height:100%;
   transform:rotate(-90deg);
 }
 
 .track{
   fill:none;
   stroke:rgba(255,255,255,0.08);
-  stroke-width:10;
+  stroke-width:4;
 }
 
 .progress{
   fill:none;
   stroke:var(--accent);
-  stroke-width:10;
+  stroke-width:4;
   stroke-linecap:round;
-  filter: drop-shadow(0 0 6px rgba(110,160,255,0.35));
-  transition: stroke 0.4s ease, stroke-dashoffset 0.6s cubic-bezier(.22,1,.36,1);
-  will-change: stroke-dashoffset;
+  filter: drop-shadow(0 0 6px rgba(110,160,255,0.6));
+  transition: stroke-dashoffset 0.5s ease, filter 0.3s ease;
 }
 
 .dot{
   position:absolute;
-  width:10px;
-  height:10px;
+  width:6px;
+  height:6px;
   border-radius:50%;
   background:var(--accent);
-  box-shadow:0 0 10px var(--accent),0 0 20px rgba(110,160,255,0.5);
+  box-shadow:0 0 10px var(--accent), 0 0 20px rgba(110,160,255,0.5);
   transform:translate(-50%,-50%);
 }
 
 .center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   text-align:center;
-  z-index:2;
   font-family:'JetBrains Mono',monospace;
 }
 
 .time-line{
-  font-size:2.2rem;
+  font-size:clamp(1.4rem,5vw,2rem);
   letter-spacing:2px;
-  opacity:0.95;
 }
 
 .row{
   display:flex;
-  gap:12px;
+  gap:10px;
 }
 
 .box{
   background:rgba(255,255,255,0.05);
-  padding:10px 16px;
-  border-radius:14px;
-  font-size:0.85rem;
+  padding:8px 14px;
+  border-radius:12px;
+  font-size:0.8rem;
   cursor:pointer;
-  transition:all 0.18s ease;
-  backdrop-filter:blur(8px);
-}
-
-.box:hover{
-  background:rgba(255,255,255,0.08);
+  transition:all 0.15s ease;
 }
 
 .box:active{
   transform:scale(0.9);
-  background:rgba(255,255,255,0.18);
 }
 
 .box.done{
   opacity:0.3;
-  text-decoration:line-through;
 }
 
 .next{
-  font-size:0.95rem;
-  opacity:0.85;
-}
-
-@media(max-width:500px){
-  .ring{width:260px;height:260px}
-  svg{width:260px;height:260px}
-  .time-line{font-size:1.6rem}
+  font-size:0.85rem;
+  opacity:0.8;
+  text-align:center;
 }
 
 </style>
 </head>
+
 <body>
 
 <div class="wrapper">
@@ -165,9 +146,9 @@ svg{
   <div class="datetime" id="dateTime"></div>
 
   <div class="ring">
-    <svg>
-      <circle class="track" cx="160" cy="160" r="140"></circle>
-      <circle class="progress" id="progressCircle" cx="160" cy="160" r="140"></circle>
+    <svg viewBox="0 0 100 100">
+      <circle class="track" cx="50" cy="50" r="45"></circle>
+      <circle class="progress" id="progressCircle" cx="50" cy="50" r="45"></circle>
     </svg>
 
     <div class="dot" id="dot"></div>
@@ -198,9 +179,9 @@ const d3Days=[6,13,20,27];
 
 const circle=document.getElementById("progressCircle");
 const dot=document.getElementById("dot");
-const radius=140;
-const circumference=2*Math.PI*radius;
 
+const radius=45;
+const circumference=2*Math.PI*radius;
 circle.style.strokeDasharray=circumference;
 
 function formatDate(date){
@@ -218,8 +199,8 @@ d3Btn.classList.toggle('done', saved[key]?.d3);
 function update(){
 const now=new Date();
 
-// date time
-dateTime.innerText=now.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+// datetime
+ dateTime.innerText=now.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
 
 const diff=examStart-now;
 
@@ -241,21 +222,20 @@ const total=examStart-startWindow;
 const elapsed=now-startWindow;
 let p=Math.max(0,Math.min(1,elapsed/total));
 
-const offset=circumference*(1-p);
-circle.style.strokeDashoffset=offset;
+circle.style.strokeDashoffset=circumference*(1-p);
 
 const color=d<=7?'#4ade80':'#6ea0ff';
 circle.style.stroke=color;
 
-// moving dot
+// dot position (responsive)
 const angle=2*Math.PI*p - Math.PI/2;
-const cx=160 + radius*Math.cos(angle);
-const cy=160 + radius*Math.sin(angle);
+const x=50 + radius*Math.cos(angle);
+const y=50 + radius*Math.sin(angle);
 
-dot.style.left=cx+"px";
-dot.style.top=cy+"px";
+// convert svg coords to %
+dot.style.left = x + "%";
+dot.style.top = y + "%";
 dot.style.background=color;
-dot.style.boxShadow=`0 0 10px ${color},0 0 20px ${color}`;
 
 // buttons
 const today=now.getDate();
@@ -278,12 +258,6 @@ d3Btn.onclick=()=>toggleTask('d3');
 applyTaskState();
 setInterval(update,1000);
 update();
-</script>
-
-  <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
 </script>
 
 </body>
